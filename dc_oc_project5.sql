@@ -5,7 +5,6 @@ DROP DATABASE IF EXISTS openfoodfacts;
 CREATE DATABASE openfoodfacts;
 
 
-
 CREATE TABLE Products(
 	id  VARCHAR(100) NOT NULL,
 	name VARCHAR(100) NOT NULL,

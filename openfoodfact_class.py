@@ -10,10 +10,10 @@ PRODUCTS_URL = 'https://world.openfoodfacts.org/country/france/'
 class Categories:
     """Class representing the 'Categories' table of the database"""
 
-	def __init__(self, data_info):
+	def __init__(self, data):
         
-		self.id = data_info['id']
-		self.name = data_info['name']
+		self.id = data['id']
+		self.name = data['name']
 
 
 	def find_url(self, url):
@@ -23,18 +23,24 @@ class Categories:
 			name_category = (categories["name"])
 			
 
-	# def category_manager(self):
+class category_manager:
+
+	def __init__(self,):
+
+	def select_category(self):
+
+	def diplay_category(self):
+
+
 	
-
-
 class Product:
     """Class representing the 'Product' table of the database"""
 
     def __init__(self, data_info):
-        self.id = data_info['id']
-        self.name = data_info['name']
-        self.url = data_info['url']
-        self.category = ""
+        self.id = data['id']
+        self.name = data['name']
+        self.url = data['url']
+        #self.category = ""
 
 
 	def find_url(self, url):
@@ -45,11 +51,20 @@ class Product:
 			id_product = str(products["id"])
 
 
-	# def product_manager(self):
+class product_manager:
 
-	def select_favorite(self):	
+	def __init__(self,):
+
+	def select_product(self):
+
+	def diplay_product(self):	
 
 	def add_favorite(self:)
+	# 	 print(' Do you want to save this match as favorite ?')
+	#    print('1. Yes')
+	#    print('2. No')
+  	#  	 if choice == 1:
+  	#    elif choice == 2:
 	
 			
 
