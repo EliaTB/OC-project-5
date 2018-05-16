@@ -1,6 +1,6 @@
 # OC Projet 5: Utilisez les données publiques de l'OpenFoodFacts
 
-## User installation:
+### User installation:
 
 #### 1 - Requierements:
 To install all of the required dependencies open the command prompt and use pip : `pip install -r requirements.txt`
