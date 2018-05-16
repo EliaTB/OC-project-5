@@ -1,26 +1,36 @@
-SET NAMES utf8;
+CREATE DATABASE openfoodtest;
 
-DROP DATABASE IF EXISTS openfoodfacts;
-
-CREATE DATABASE openfoodfacts;
+USE openfoodtest;
 
 
-CREATE TABLE Products(
-	id  VARCHAR(100) NOT NULL,
-	name VARCHAR(100) NOT NULL,
-	url  VARCHAR(400) NOT NULL,
-	stores VARCHAR(200),
-	PRIMARY KEY(id)
-)
+CREATE TABLE category(
+	id INT NOT NULL AUTO_INCREMENT,
+	tag VARCHAR(300) NULL,
+    name VARCHAR(300) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    CONSTRAINT id PRIMARY KEY (id)
+);
 
-CREATE TABLE Categories(
-	id VARCHAR(100) NOT NULL,
-	name VARCHAR(100) NOT NULL,
-	PRIMARY KEY(id)
-)
 
-CREATE TABLE Favorites(
-	id INT UNSIGNED AUTO_INCREMENT,
-	product_id INT UNSIGNED NOT NULL,
-	PRIMARY KEY(id)
-)
+CREATE TABLE product(
+	id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(300) NOT NULL,
+    store VARCHAR(300) NOT NULL,
+    nutrition_grade CHAR(1) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+	category VARCHAR(300) NOT NULL,
+    CONSTRAINT id PRIMARY KEY (id)
+);
+
+
+CREATE TABLE favorite(
+	id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(300) NOT NULL,
+    store VARCHAR(300) NOT NULL,
+    nutrition_grade CHAR(1) NOT NULL,
+  	url VARCHAR(255) NOT NULL,
+	category VARCHAR(300) NOT NULL,
+    CONSTRAINT id PRIMARY KEY (id)
+);
+
+
