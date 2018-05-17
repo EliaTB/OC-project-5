@@ -47,22 +47,24 @@ except pymysql.InternalError:
 
 
 def fill_product():
+    page = 1 
     cursor = connexion.cursor(pymysql.cursors.DictCursor)
-    result = requests.get('https://fr.openfoodfacts.org/cgi/search.pl?page_size=1000&page=1&action=process&json=1').json()
-    for element in result['products']:
-        try:
-            product_info = (element["product_name"], element["stores"], element["nutrition_grade_fr"], element["url"], element['categories_tags'][0])
-            products_list.append(cl.Product(element["product_name"], element["stores"], element["nutrition_grade_fr"], element["url"], element['categories_tags'][0]))        
-            cursor.execute("INSERT INTO product" "(name, store, nutrition_grade, url, category)"\
-            "VALUES (%s, %s, %s, %s, %s)", product_info)
-            connexion.commit()
-            print(len(products_list), " products")
-        except KeyError: #Don't take lignes without 'product_name'
-            pass
-        except connexion.OperationalError: #Don't take the products with encoding error
-            pass
-        except connexion.DataError: #Pass when product name is too long
-            pass
+    for page in range(1, 1000): 
+        result = requests.get('https://fr.openfoodfacts.org/cgi/search.pl?page_size=1000&page={}&action=process&json=1'.format(page)).json()  
+        for element in result['products']:
+            try:
+                product_info = (element["product_name"], element["stores"], element["nutrition_grade_fr"], element["url"], element['categories_tags'][0])
+                products_list.append(cl.Product(element["product_name"], element["stores"], element["nutrition_grade_fr"], element["url"], element['categories_tags'][0]))        
+                cursor.execute("INSERT INTO product" "(name, store, nutrition_grade, url, category)"\
+                "VALUES (%s, %s, %s, %s, %s)", product_info)
+                connexion.commit()
+                print(len(products_list), " products")
+            except KeyError: #Don't take lignes without 'product_name'
+                pass
+            except connexion.OperationalError: #Don't take the products with encoding error
+                pass
+            except connexion.DataError: #Pass when product name is too long
+                pass
 
 
 
@@ -71,7 +73,7 @@ def fill_category():
     cursor = connexion.cursor()
     result = requests.get('https://fr.openfoodfacts.org/categories.json').json()
     for element in result['tags']:
-        if element['products'] > 1000:
+        if element['products'] > 1500:
             try:
                 categories_list.append(cl.Category(element["id"], element["name"], element["url"]))
                 cursor.execute("INSERT INTO category (tag, name, url)"\
@@ -205,7 +207,7 @@ def select_products_from_category(category):
 
 def print_product(product):
     while True:
-        print("\n\t<__/ Fiche du Produit \__>\n")
+        print("\n\t__Fiche du Produit__\n")
         print("Nom du produit : " + product.name)
         print("Magasin : " + product.store)
         print("Nutri score: "+ product.nutrition_grade)
@@ -255,13 +257,27 @@ def save_user_product(product):
 
 
 def get_substitutes(product):
-    result = select_products_from_category(product.category)
+    cursor = connexion.cursor(pymysql.cursors.DictCursor)
     s_products = []
-    for element in result:
-        if element.nutrition_grade >= product.nutrition_grade:
-            continue
-        s_products.append(element)
-    return s_products
+    if product.nutrition_grade == "d" or product.nutrition_grade == "e":
+        cursor.execute("""SELECT * FROM product WHERE category LIKE %s AND nutrition_grade="a" 
+                        OR category LIKE %s AND nutrition_grade="b"
+                        OR category LIKE %s AND nutrition_grade="c" """, (product.category, product.category, product.category))
+        result = cursor.fetchall()
+        for element in result:
+            s_products.append(cl.Product(element['name'], element['store'], element['nutrition_grade'], element['url'], element['category']))
+        return s_products
+
+    else:
+        cursor.execute("""SELECT * FROM product WHERE category LIKE %s AND nutrition_grade="a" """, (product.category))
+        result = cursor.fetchall()
+        for element in result:
+            s_products.append(cl.Product(element['name'], element['store'], element['nutrition_grade'], element['url'], element['category']))
+        return s_products
+
+   
+
+
 
 
 def substitutes_browser(product):
@@ -281,11 +297,11 @@ def substitutes_browser(product):
 
         print("\nListe des {} substitution pour le produit \"{}\" : \n".format(len(substitutes), product.name))
         if len(substitutes) == 0:
-            print("\nVous utilisez déjà un produit sain selon OpenFoodFacts.\nRetour à la fiche produit.\n")
+            print("\nRetour à la fiche produit.\n")
             break
         else:
             for i in range(page_min, page_max):
-                print("{} - {}".format(i + 1, substitutes[i].name))
+                print("{} - {}".format(i+1, substitutes[i].name))
 
         uinput = input("\nEntrez: Numéro - selectionner un produit | > - page suivante |"
                        " < - page précedente | 0 - revenir au produit\n")
@@ -322,7 +338,7 @@ def favorite_browser():
             page_max = len(favorite_products)
             page_min = 0
 
-        print("<__/ Liste des produits enregistrés \__>")
+        print("__Liste des produits enregistrés__")
         for i in range(page_min, page_max):
             print("{} - {}".format(i+1, favorite_products[i].name,))
         uinput = input("\nEntrez: Numéro - selectionner un produit | > - page suivante |"
@@ -372,7 +388,7 @@ def client_menu():
         categories_list = get_categories_from_db()
 
     while running is True:
-        print("\n\t<__/ Menu Principal \__>")
+        print("\n\t__Menu Principal__")
         print("1 : Quel aliment souhaitez-vous remplacer ? ")
         print("2 : Afficher la liste des favoris")
         print("3 : Quitter")
