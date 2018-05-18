@@ -1,3 +1,3 @@
 """Config file"""
-DB_USER = 'user1'
-DB_PW = ''
+DB_USER = 'yourusername'
+DB_PW = 'yourpassword'
