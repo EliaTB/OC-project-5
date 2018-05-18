@@ -11,7 +11,6 @@ Use the command : `GRANT ALL PRIVILEGES ON * . * TO 'yourusername'@'localhost' I
 #### 3 - Edit the "config.py" file containing the following code :
 `DB_USER = 'yourusername'`
 `DB_PW = 'yourpassword'`
-`DB_NAME = 'yourdbename' `
 
 #### 4 - Start the program
 `python main.py`
