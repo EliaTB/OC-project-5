@@ -1,6 +1,6 @@
-CREATE DATABASE openfoodtest;
+CREATE DATABASE openfoodfact;
 
-USE openfoodtest;
+USE openfoodfact;
 
 
 CREATE TABLE category(

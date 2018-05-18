@@ -30,7 +30,7 @@ try:
     connexion = pymysql.connect(host='localhost',
                                 user=DB_USER,
                                 password=DB_PW,
-                                db=DB_NAME,
+                                db='openfoodfact',
                                 charset='utf8mb4', )
     
 except pymysql.InternalError:
@@ -49,7 +49,7 @@ except pymysql.InternalError:
 def fill_product():
     page = 1 
     cursor = connexion.cursor(pymysql.cursors.DictCursor)
-    for page in range(1, 1000): 
+    for page in range(1, 30): 
         result = requests.get('https://fr.openfoodfacts.org/cgi/search.pl?page_size=1000&page={}&action=process&json=1'.format(page)).json()  
         for element in result['products']:
             try:
@@ -170,7 +170,12 @@ def category_product_browser(c_id, category_name):
             page_min = 0
             page_max = 10
 
-        print("\nAffichage des produits de la catégorie {} | Page : {}".format(categories_list[c_id].name, int(page_max/10)))
+        if len(category_products)==0:
+        	print("\nIl n'y a pas de produits dans cette catégorie")
+        	break
+
+
+        print("\nAffichage des produits de la catégorie {}".format(categories_list[c_id].name,))
         for i in range(page_min, page_max):
             print("{} - {}".format(i+1, category_products[i].name))
 
@@ -297,7 +302,7 @@ def substitutes_browser(product):
 
         print("\nListe des {} substitution pour le produit \"{}\" : \n".format(len(substitutes), product.name))
         if len(substitutes) == 0:
-            print("\nRetour à la fiche produit.\n")
+            print("\nIl n'y a pas de substitut pour votre produit.\nRetour à la fiche produit.\n")
             break
         else:
             for i in range(page_min, page_max):
@@ -338,7 +343,7 @@ def favorite_browser():
             page_max = len(favorite_products)
             page_min = 0
 
-        print("__Liste des produits enregistrés__")
+        print("\n__Liste des produits enregistrés__")
         for i in range(page_min, page_max):
             print("{} - {}".format(i+1, favorite_products[i].name,))
         uinput = input("\nEntrez: Numéro - selectionner un produit | > - page suivante |"
